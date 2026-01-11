@@ -15,40 +15,53 @@ export default function SurveyPage() {
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({})
 
   useEffect(() => {
-    const b = sessionStorage.getItem('bakeSessionID')
-    const s = sessionStorage.getItem('submitterName')
-    if (!b || !s) return navigate('/')
-    setBakeSessionID(b)
-    setSubmitterName(s)
+  const b = sessionStorage.getItem('bakeSessionID')
+  const s = sessionStorage.getItem('submitterName')
 
-    let mounted = true
-    ;(async () => {
-      setLoading(true)
-      setFetchError(null)
-      try {
-        const f = await fetchForm(b)
-        if (!mounted) return
-        if (!f) {
-          setFetchError('Form not found')
-          setForm(null)
-          return
-        }
-        setForm(f)
-        // init answers
-        const map: Record<string, null> = {}
-        f.questions.forEach((q) => (map[q.id] = null))
-        setAnswers(map)
-      } catch (err: any) {
-        setFetchError(err?.message ?? 'Failed to load form')
-      } finally {
-        setLoading(false)
+  if (!b || !s) {
+    navigate('/')
+    return
+  }
+
+  setBakeSessionID(b)
+  setSubmitterName(s)
+
+  let mounted = true
+
+  ;(async () => {
+    if (!mounted) return
+    setLoading(true)
+    setFetchError(null)
+
+    try {
+      const f = await fetchForm(b)
+      if (!mounted) return
+
+      if (!f) {
+        setFetchError('Form not found')
+        setForm(null)
+        return
       }
-    })()
 
-    return () => {
-      mounted = false
+      setForm(f)
+
+      // init answers
+      const map: Record<string, string | number | null> = {}
+      f.questions.forEach((q) => (map[q.id] = null))
+      setAnswers(map)
+    } catch (err: any) {
+      if (!mounted) return
+      setFetchError(err?.message ?? 'Failed to load form')
+    } finally {
+      if (!mounted) return
+      setLoading(false)
     }
-  }, [navigate])
+  })()
+
+  return () => {
+    mounted = false
+  }
+}, [navigate])
 
   function handleChange(id: string, value: string | number) {
     setAnswers((a) => ({ ...a, [id]: value }))
