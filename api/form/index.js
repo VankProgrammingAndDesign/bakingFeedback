@@ -1,6 +1,8 @@
 const crypto = require('node:crypto')
 const { CosmosClient } = require('@azure/cosmos')
 
+const BUILD_STAMP = `form-${new Date().toISOString()}`
+
 const DEFAULT_FORM = {
   id: 'default',
   formVersion: 'dev-1',
