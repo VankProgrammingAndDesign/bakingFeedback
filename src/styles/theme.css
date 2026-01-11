@@ -1,0 +1,30 @@
+:root {
+  --bg: #0F172A;
+  --surface: #111827;
+  --card: rgba(255, 248, 235, 0.06);
+  --cardBorder: rgba(255, 248, 235, 0.12);
+  --text: #F8FAFC;
+  --muted: rgba(248, 250, 252, 0.72);
+  --accent: #1D4ED8;
+  --accent2: #B45309;
+  --danger: #E11D48;
+  --focus: rgba(29, 78, 216, 0.35);
+
+  font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+}
+
+html, body, #root {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* Base content container */
+.app-root { padding: 18px; }
+.app-header h1 { margin: 0; font-size: 1.6rem; letter-spacing: -0.01em }
+.app-subtitle { margin-top: 6px; color: var(--muted); font-size: 0.95rem }
+
+/* Form surface */
+.form-container { max-width: 480px; margin: 12px auto; padding: 8px }
+
+.summary { margin-bottom: 12px }
