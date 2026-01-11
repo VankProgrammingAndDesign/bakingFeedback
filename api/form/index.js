@@ -48,7 +48,24 @@ module.exports = async function (context, req) {
     // not found - return default
     context.res = { status: 200, body: { ok: true, form: DEFAULT_FORM } }
   } catch (err) {
-    context.log.error('Error in /api/form', err)
-    context.res = { status: 500, body: { ok: false, error: 'Failed to load form' } }
+  context.log.error('Error in /api/form', err)
+
+  context.res = {
+    status: 500,
+    body: {
+      ok: false,
+      error: err?.message || String(err),
+      name: err?.name,
+      code: err?.code,
+      diagnostics: {
+        databaseId,
+        containerId,
+        hasEndpoint: !!process.env.COSMOS_ENDPOINT,
+        hasKey: !!process.env.COSMOS_KEY,
+        endpointHost: (process.env.COSMOS_ENDPOINT || '').replace(/^https?:\/\//, '').split('/')[0],
+        // note: does NOT return COSMOS_KEY
+      }
+    }
   }
+}
 }
