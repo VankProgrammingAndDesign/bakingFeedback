@@ -1,73 +1,132 @@
-# React + TypeScript + Vite
+# Baking Feedback
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Overview
+This is a mobile-friendly web app for collecting structured feedback on baked goods via QR codes. A QR code opens a Static Web App URL with embedded parameters (such as `bakeSessionID` and `submitterName`), the frontend loads the correct form, and submissions are stored in Azure Cosmos DB for later review.
 
-Currently, two official plugins are available:
+The app is deployed to Azure Static Web Apps. The frontend is React + Vite, the backend is Azure Functions (Node.js), and data is stored in Cosmos DB (NoSQL).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Architecture Summary
+- Azure Static Web Apps hosts the SPA frontend and routes `/api/*` to Azure Functions.
+- Azure Functions expose `GET /api/form` and `POST /api/submit`.
+- Azure Cosmos DB stores form definitions and submissions.
+- App Insights is referenced in the project spec but not wired in this repo.
 
-## React Compiler
+## User Flow
+1) User scans a QR code on packaging.
+2) The QR opens a URL like `/r?bakeSessionID=...&submitterName=...`.
+3) The frontend stores the parameters in session storage and routes to `/survey`.
+4) The survey form loads from `/api/form`.
+5) The user submits, `/api/submit` writes to Cosmos DB, and the app shows `/thanks`.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Repository Structure
+- `src/` React app (routes and UI)
+- `api/` Azure Functions for form and submission APIs
+- `staticwebapp.config.json` SPA fallback routing for SWA
+- `.github/workflows/` CI/CD pipeline for SWA
+- `docs/` Extended documentation (architecture, API, data model, deployment)
 
-## Expanding the ESLint configuration
+## Local Development
+### Frontend
+```bash
+npm install
+npm run dev
+```
+Vite runs at `http://localhost:5173` and proxies `/api` to `http://localhost:7071` per `vite.config.ts`.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### API (Azure Functions)
+```bash
+cd api
+npm install
+# copy api/local.settings.json.example to api/local.settings.json and fill values
+func start
+```
+Functions host runs at `http://localhost:7071`.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Environment Variables
+Frontend uses relative `/api` calls; no frontend env vars are required by default.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+Azure Functions read these variables:
+- `COSMOS_ENDPOINT`
+- `COSMOS_KEY`
+- `COSMOS_DATABASE` (default `bakingFeedbackDB`)
+- `COSMOS_FORMS_CONTAINER` (default `forms`)
+- `COSMOS_SUBMISSIONS_CONTAINER` (default `submissions`)
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Example `api/local.settings.json`:
+```json
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "node",
+    "COSMOS_ENDPOINT": "https://<account>.documents.azure.com:443/",
+    "COSMOS_KEY": "<key>",
+    "COSMOS_DATABASE": "bakingFeedbackDB",
+    "COSMOS_FORMS_CONTAINER": "forms",
+    "COSMOS_SUBMISSIONS_CONTAINER": "submissions"
+  }
+}
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## API Documentation (Summary)
+### GET /api/form
+Query: `?bakeSessionID=<id>`
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Response (200):
+```json
+{
+  "ok": true,
+  "form": {
+    "id": "rv1-test-1",
+    "title": "Bakery Feedback",
+    "version": "v1",
+    "questions": []
+  }
+}
 ```
+
+### POST /api/submit
+Body:
+```json
+{
+  "bakeSessionID": "rv1-test-1",
+  "submitterName": "ryan",
+  "answers": { "q1": 4 },
+  "formVersion": "v1",
+  "honeypot": ""
+}
+```
+Response (200):
+```json
+{ "ok": true, "submissionId": "<uuid>" }
+```
+
+See full examples and error cases in `docs/api.md`.
+
+## Cosmos DB Schema (Summary)
+Containers:
+- `forms`: documents keyed by `id` (bakeSessionID)
+- `submissions`: documents with `bakeSessionID`, `submitterName`, `answers`, `formVersion`, `submittedAtUtc`
+
+No partition key is specified in code; it depends on Cosmos container configuration. See `docs/data-model.md`.
+
+## Security and Validation
+- Basic input validation on `bakeSessionID` and `submitterName` length.
+- Honeypot field (`honeypot`) is rejected if present.
+- Optional QR signature is referenced in the spec but not implemented.
+
+## Monitoring and Observability
+- Application Insights is referenced in the spec but not configured in this repo.
+
+## Deployment Notes
+- CI/CD uses `.github/workflows/azure-static-web-apps-*.yml`.
+- `app_location: "/"`, `api_location: "api"`, `output_location: "dist"`.
+- `staticwebapp.config.json` provides SPA fallback for `/r`, `/survey`, `/thanks`.
+
+## Troubleshooting
+- 404 on `/r` or `/survey`: confirm `staticwebapp.config.json` is deployed.
+- `Failed to load form (500)`: verify SWA app settings for Cosmos and check `/api/form` error body.
+- Local API not reachable: ensure `func start` is running on `http://localhost:7071`.
+
+## Spec vs Current Implementation
+See `docs/spec-vs-current.md` for any mismatches between the project spec and the current repo.

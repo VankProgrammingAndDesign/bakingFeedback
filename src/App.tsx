@@ -11,6 +11,7 @@ function App() {
         <h1>Bakery Feedback</h1>
       </header>
       <main className="app-main">
+        {/* App routes: redirect entry, survey form, and thank-you */}
         <Routes>
           <Route path="/r" element={<RedirectPage />} />
           <Route path="/survey" element={<SurveyPage />} />

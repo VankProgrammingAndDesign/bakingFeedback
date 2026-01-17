@@ -7,6 +7,7 @@ import App from './App'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
+    {/* Client-side routing for /r, /survey, /thanks */}
     <BrowserRouter>
       <App />
     </BrowserRouter>

@@ -11,6 +11,7 @@ const DEFAULT_FORM = {
 }
 
 function getCosmosClient() {
+  // Cosmos SDK expects Web Crypto; polyfill for Functions runtime if needed.
   if (!globalThis.crypto && nodeCrypto.webcrypto) {
     globalThis.crypto = nodeCrypto.webcrypto
   }
@@ -20,6 +21,7 @@ function getCosmosClient() {
   return new CosmosClient({ endpoint, key })
 }
 
+// HTTP GET handler for /api/form
 module.exports = async function (context, req) {
   const bakeSessionID = (req.query && req.query.bakeSessionID) || null
 

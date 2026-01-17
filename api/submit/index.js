@@ -2,6 +2,7 @@ const { CosmosClient } = require('@azure/cosmos')
 const crypto = require('crypto')
 
 function getCosmosClient() {
+  // Cosmos SDK expects Web Crypto; polyfill for Functions runtime if needed.
   if (!globalThis.crypto && crypto.webcrypto) {
     globalThis.crypto = crypto.webcrypto
   }
@@ -11,6 +12,7 @@ function getCosmosClient() {
   return new CosmosClient({ endpoint, key })
 }
 
+// HTTP POST handler for /api/submit
 module.exports = async function (context, req) {
   const body = req.body || {}
 
