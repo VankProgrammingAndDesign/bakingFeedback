@@ -1,4 +1,5 @@
 const { CosmosClient } = require('@azure/cosmos')
+const nodeCrypto = require('crypto')
 
 const DEFAULT_FORM = {
   id: 'default',
@@ -10,6 +11,9 @@ const DEFAULT_FORM = {
 }
 
 function getCosmosClient() {
+  if (!globalThis.crypto && nodeCrypto.webcrypto) {
+    globalThis.crypto = nodeCrypto.webcrypto
+  }
   const endpoint = process.env.COSMOS_ENDPOINT
   const key = process.env.COSMOS_KEY
   if (!endpoint || !key) return null

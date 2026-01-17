@@ -2,6 +2,9 @@ const { CosmosClient } = require('@azure/cosmos')
 const crypto = require('crypto')
 
 function getCosmosClient() {
+  if (!globalThis.crypto && crypto.webcrypto) {
+    globalThis.crypto = crypto.webcrypto
+  }
   const endpoint = process.env.COSMOS_ENDPOINT
   const key = process.env.COSMOS_KEY
   if (!endpoint || !key) return null
