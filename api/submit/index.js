@@ -43,7 +43,7 @@ module.exports = async function (context, req) {
     return
   }
 
-  const databaseId = process.env.COSMOS_DATABASE || 'bakingFeedback'
+  const databaseId = process.env.COSMOS_DATABASE || 'bakingFeedbackDB'
   const containerId = process.env.COSMOS_SUBMISSIONS_CONTAINER || 'submissions'
 
   try {

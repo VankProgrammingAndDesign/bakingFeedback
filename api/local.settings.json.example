@@ -6,7 +6,7 @@
 
     "COSMOS_ENDPOINT": "https://your-cosmos-account.documents.azure.com:443/",
     "COSMOS_KEY": "<your-key-here>",
-    "COSMOS_DATABASE": "bakingFeedback",
+    "COSMOS_DATABASE": "bakingFeedbackDB",
     "COSMOS_FORMS_CONTAINER": "forms",
     "COSMOS_SUBMISSIONS_CONTAINER": "submissions"
   }
