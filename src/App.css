@@ -51,6 +51,17 @@
   padding: 8px 0 16px;
   border-bottom: 1px solid rgba(255,255,255,0.03);
 }
+.brand { display: flex; align-items: center; gap: 14px; }
+.brand-photo {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: radial-gradient(circle at 40% 35%, rgba(255,255,255,0.22), transparent 60%);
+  box-shadow: 0 6px 18px rgba(2,6,23,0.35);
+  -webkit-mask-image: radial-gradient(circle at 50% 40%, #000 60%, transparent 85%);
+  mask-image: radial-gradient(circle at 50% 40%, #000 60%, transparent 85%);
+}
 
 .form-title { font-size: 1.2rem; margin: 6px 0 6px; color: var(--text); font-weight:700 }
 .app-main {
@@ -111,6 +122,7 @@
 .metric-subtext { color: var(--muted); font-size: 0.8rem; margin-top: 4px; }
 
 .submissions-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+.submissions-grid.single { grid-template-columns: minmax(0, 1fr); }
 .submission-card { background: var(--card); border: 1px solid var(--cardBorder); border-radius: 12px; padding: 14px; }
 .submission-meta { margin-bottom: 10px; }
 .submission-title { font-weight: 700; }
@@ -119,3 +131,20 @@
 .qa-item { border-top: 1px solid rgba(148,163,184,0.2); padding-top: 8px; }
 .qa-question { font-weight: 600; }
 .qa-answer { color: var(--text); opacity: 0.9; }
+
+.pagination { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 8px 0 16px; }
+.page-controls { display: flex; align-items: center; gap: 8px; }
+.page-btn { background: var(--card); border: 1px solid var(--cardBorder); color: var(--text); border-radius: 8px; padding: 6px 10px; min-width: 40px; }
+.page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.page-status { color: var(--muted); font-size: 0.9rem; }
+
+@media (max-width: 640px) {
+  .dashboard { padding: 0 4px; }
+  .dashboard-topbar { align-items: flex-start; }
+  .dashboard-filter { width: 100%; justify-content: space-between; }
+  .dashboard-filter select { width: 100%; }
+  .metric-row { grid-template-columns: 1fr; }
+  .pagination { gap: 8px; flex-direction: column; }
+  .page-controls { order: 1; }
+  .page-status { order: 2; text-align: center; }
+}

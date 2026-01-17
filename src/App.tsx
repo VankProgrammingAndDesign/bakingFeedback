@@ -9,7 +9,10 @@ function App() {
   return (
     <div className="app-root">
       <header className="app-header">
-        <h1>Bakery Feedback</h1>
+        <div className="brand">
+          <img className="brand-photo" src="/assets/chef.png" alt="Chef" />
+          <h1>Lemon Loaf Feedback</h1>
+        </div>
       </header>
       <main className="app-main">
         {/* App routes: redirect entry, survey form, thank-you, and dashboard */}
