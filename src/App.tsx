@@ -3,6 +3,7 @@ import './App.css'
 import RedirectPage from './pages/Redirect'
 import SurveyPage from './pages/Survey'
 import ThanksPage from './pages/Thanks'
+import DashboardPage from './pages/Dashboard'
 
 function App() {
   return (
@@ -11,17 +12,19 @@ function App() {
         <h1>Bakery Feedback</h1>
       </header>
       <main className="app-main">
-        {/* App routes: redirect entry, survey form, and thank-you */}
+        {/* App routes: redirect entry, survey form, thank-you, and dashboard */}
         <Routes>
           <Route path="/r" element={<RedirectPage />} />
           <Route path="/survey" element={<SurveyPage />} />
           <Route path="/thanks" element={<ThanksPage />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
           <Route
             path="/"
             element={
               <div className="home">
                 <p>Start by visiting a redirect link with query params.</p>
                 <p>Example: <Link to="/r?bakeSessionID=abc123&submitterName=Alex">Open sample link</Link></p>
+                <p>View submissions on the <Link to="/dashboard">dashboard</Link>.</p>
               </div>
             }
           />

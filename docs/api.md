@@ -83,3 +83,49 @@ curl -X POST "http://localhost:7071/api/submit" \
 
 500 Server Error:
 - Cosmos DB not configured or write failure
+
+## GET /api/submissions
+Returns recent submissions for the dashboard. Optionally filter by recipe ID.
+
+### Request
+Query params:
+- `recipeId` (string, optional) - mapped to `bakeSessionID` in current data model
+
+Example:
+```bash
+curl "http://localhost:7071/api/submissions?recipeId=rv1-test-1"
+```
+
+### Response
+200 OK:
+```json
+{
+  "ok": true,
+  "submissions": [
+    {
+      "id": "6b2d6cbe-73c1-4df2-9c3d-2f4a7b8fce12",
+      "recipeId": "rv1-test-1",
+      "bakeSessionID": "rv1-test-1",
+      "submitterName": "ryan",
+      "formVersion": "v1",
+      "submittedAtUtc": "2026-01-11T02:34:56.000Z",
+      "qa": [
+        { "questionId": "q1", "questionText": "How tasty was the bread?", "answerValue": 4 }
+      ]
+    }
+  ]
+}
+```
+
+## GET /api/recipes
+Returns distinct recipe IDs for the dashboard filter.
+
+Example:
+```bash
+curl "http://localhost:7071/api/recipes"
+```
+
+Response:
+```json
+{ "ok": true, "recipeIds": ["rv1-test-1", "rv1-test-2"] }
+```

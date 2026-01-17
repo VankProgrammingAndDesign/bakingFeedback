@@ -5,9 +5,12 @@ This is a mobile-friendly web app for collecting structured feedback on baked go
 
 The app is deployed to Azure Static Web Apps. The frontend is React + Vite, the backend is Azure Functions (Node.js), and data is stored in Cosmos DB (NoSQL).
 
+The Dashboard at `/dashboard` lists multiple submissions with question/answer pairing and summary metrics. It supports filtering by recipe ID (currently backed by `bakeSessionID` in submissions).
+
 ## Architecture Summary
 - Azure Static Web Apps hosts the SPA frontend and routes `/api/*` to Azure Functions.
 - Azure Functions expose `GET /api/form` and `POST /api/submit`.
+- Azure Functions also expose `GET /api/submissions` and `GET /api/recipes` for the dashboard.
 - Azure Cosmos DB stores form definitions and submissions.
 - App Insights is referenced in the project spec but not wired in this repo.
 
@@ -17,6 +20,7 @@ The app is deployed to Azure Static Web Apps. The frontend is React + Vite, the 
 3) The frontend stores the parameters in session storage and routes to `/survey`.
 4) The survey form loads from `/api/form`.
 5) The user submits, `/api/submit` writes to Cosmos DB, and the app shows `/thanks`.
+6) Admins can view submissions and metrics at `/dashboard`.
 
 ## Repository Structure
 - `src/` React app (routes and UI)
@@ -102,6 +106,12 @@ Response (200):
 ```
 
 See full examples and error cases in `docs/api.md`.
+
+### GET /api/submissions
+Optional query: `?recipeId=<id>` (mapped to `bakeSessionID`).
+
+### GET /api/recipes
+Returns distinct recipe IDs for the dashboard dropdown.
 
 ## Cosmos DB Schema (Summary)
 Containers:

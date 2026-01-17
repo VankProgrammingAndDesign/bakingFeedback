@@ -4,7 +4,7 @@
 Database: `bakingFeedbackDB` (default in code)
 Containers: `forms`, `submissions`
 
-Partition key is not specified in code; it depends on the Cosmos container configuration.
+Partition key is not specified in code; it depends on the Cosmos container configuration. Dashboard queries may be cross-partition unless the container is partitioned by `bakeSessionID` (or another filterable field).
 
 ## Forms Container
 Forms are fetched by `id` matching the `bakeSessionID` from the QR link.
@@ -51,3 +51,8 @@ Example document:
   "submittedAtUtc": "2026-01-11T02:34:56.000Z"
 }
 ```
+
+## Dashboard Data Shaping
+The dashboard needs question text alongside answers. Submissions only store `answers` by question ID, so `/api/submissions` joins with the `forms` container and returns a `qa` array with `{ questionId, questionText, answerValue }`.
+
+The dashboard filter refers to `recipeId`, which maps to `bakeSessionID` in the current data model.

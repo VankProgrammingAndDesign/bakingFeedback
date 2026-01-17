@@ -5,6 +5,7 @@
 - **App Insights:** Mentioned in spec, not configured or instrumented in code.
 - **Optional QR signature:** Mentioned in spec, not implemented in API validation.
 - **Form identity:** Spec references `bakeSessionID` field; current implementation uses `id` as the lookup key in the `forms` container.
+- **Recipe ID naming:** Dashboard filter uses `recipeId` but current submissions store `bakeSessionID`.
 
 ## Matches
 - Frontend routes: `/r`, `/survey`, `/thanks`

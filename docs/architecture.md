@@ -13,6 +13,7 @@ graph LR
 
 ## Component Responsibilities
 - **Frontend (React + Vite):** Parses `bakeSessionID` and `submitterName`, fetches form definitions, renders questions, posts submissions, and shows a thank-you page.
+- **Dashboard (Frontend):** Fetches `/api/recipes` and `/api/submissions` to render multi-submission views with metrics.
 - **Azure Functions:** Implements `/api/form` (read) and `/api/submit` (write) with input validation and basic anti-bot checks.
 - **Cosmos DB:** Stores form definitions and submission documents.
 - **Static Web Apps:** Hosts the SPA, provides `/api` integration, and rewrites routes to `index.html` for client-side routing.
