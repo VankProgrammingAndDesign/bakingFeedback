@@ -37,7 +37,7 @@ export default function RedirectPage() {
 
   return (
     <div className="page center">
-      <p>Preparing your survey…</p>
+      <p>Preparing your survey...</p>
     </div>
   )
 }

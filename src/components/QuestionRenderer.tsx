@@ -20,7 +20,7 @@ export default function QuestionRenderer({ question, value, onChange, error }: P
         </div>
         <textarea
           className="text-input"
-          placeholder="Type your answer…"
+          placeholder="Type your answer..."
           value={typeof value === 'string' ? value : ''}
           onChange={(e) => onChange(question.id, e.target.value)}
           rows={4}

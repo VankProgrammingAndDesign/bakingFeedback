@@ -1,10 +1,8 @@
 const { CosmosClient } = require('@azure/cosmos')
 
-const BUILD_STAMP = `form-${new Date().toISOString()}`
-
 const DEFAULT_FORM = {
   id: 'default',
-  formVersion: 'dev-1',
+  version: 'dev-1',
   questions: [
     { id: 'q1', type: 'scale', prompt: 'How tasty was the bread?', required: true, min: 1, max: 5 },
     { id: 'q2', type: 'text', prompt: 'Any comments or improvements?', required: false }
@@ -28,7 +26,7 @@ module.exports = async function (context, req) {
     return
   }
 
-  const databaseId = process.env.COSMOS_DATABASE || 'bakingFeedbackDB'
+  const databaseId = process.env.COSMOS_DATABASE || 'bakingFeedback'
   const containerId = process.env.COSMOS_FORMS_CONTAINER || 'forms'
 
   try {
@@ -43,7 +41,11 @@ module.exports = async function (context, req) {
 
     if (resources && resources.length > 0) {
       const formDoc = resources[0]
-      context.res = { status: 200, body: { ok: true, form: formDoc } }
+      const normalizedForm = {
+        ...formDoc,
+        version: formDoc.version ?? formDoc.formVersion ?? null
+      }
+      context.res = { status: 200, body: { ok: true, form: normalizedForm } }
       return
     }
 

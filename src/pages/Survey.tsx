@@ -13,55 +13,56 @@ export default function SurveyPage() {
   const [loading, setLoading] = useState<boolean>(false)
   const [fetchError, setFetchError] = useState<string | null>(null)
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({})
+  const [submitSummaryError, setSubmitSummaryError] = useState<string | null>(null)
 
   useEffect(() => {
-  const b = sessionStorage.getItem('bakeSessionID')
-  const s = sessionStorage.getItem('submitterName')
+    const b = sessionStorage.getItem('bakeSessionID')
+    const s = sessionStorage.getItem('submitterName')
 
-  if (!b || !s) {
-    navigate('/')
-    return
-  }
-
-  setBakeSessionID(b)
-  setSubmitterName(s)
-
-  let mounted = true
-
-  ;(async () => {
-    if (!mounted) return
-    setLoading(true)
-    setFetchError(null)
-
-    try {
-      const f = await fetchForm(b)
-      if (!mounted) return
-
-      if (!f) {
-        setFetchError('Form not found')
-        setForm(null)
-        return
-      }
-
-      setForm(f)
-
-      // init answers
-      const map: Record<string, string | number | null> = {}
-      f.questions.forEach((q) => (map[q.id] = null))
-      setAnswers(map)
-    } catch (err: any) {
-      if (!mounted) return
-      setFetchError(err?.message ?? 'Failed to load form')
-    } finally {
-      if (!mounted) return
-      setLoading(false)
+    if (!b || !s) {
+      navigate('/')
+      return
     }
-  })()
 
-  return () => {
-    mounted = false
-  }
-}, [navigate])
+    setBakeSessionID(b)
+    setSubmitterName(s)
+
+    let mounted = true
+
+    ;(async () => {
+      if (!mounted) return
+      setLoading(true)
+      setFetchError(null)
+
+      try {
+        const f = await fetchForm(b)
+        if (!mounted) return
+
+        if (!f) {
+          setFetchError('Form not found')
+          setForm(null)
+          return
+        }
+
+        setForm(f)
+
+        // init answers
+        const map: Record<string, string | number | null> = {}
+        f.questions.forEach((q) => (map[q.id] = null))
+        setAnswers(map)
+      } catch (err: any) {
+        if (!mounted) return
+        setFetchError(err?.message ?? 'Failed to load form')
+      } finally {
+        if (!mounted) return
+        setLoading(false)
+      }
+    })()
+
+    return () => {
+      mounted = false
+    }
+  }, [navigate])
 
   function handleChange(id: string, value: string | number) {
     setAnswers((a) => ({ ...a, [id]: value }))
@@ -81,8 +82,6 @@ export default function SurveyPage() {
     setValidationErrors(errs)
     return Object.keys(errs).length === 0
   }
-
-  const [submitSummaryError, setSubmitSummaryError] = useState<string | null>(null)
 
   async function handleSubmit() {
     if (!bakeSessionID) return
@@ -107,20 +106,22 @@ export default function SurveyPage() {
     }
   }
 
-  if (loading && !form) return <div className="page center">Loading…</div>
-  if (fetchError && !form) return (
-    <div className="page center">
-      <h3>{fetchError}</h3>
-      <p>Form ID: {bakeSessionID}</p>
-    </div>
-  )
+  if (loading && !form) return <div className="page center">Loading...</div>
+  if (fetchError && !form) {
+    return (
+      <div className="page center">
+        <h3>{fetchError}</h3>
+        <p>Form ID: {bakeSessionID}</p>
+      </div>
+    )
+  }
 
   return (
     <div className="page form-container">
       <h2 className="form-title">{form?.title ?? 'Bakery Feedback'}</h2>
       {submitterName && <div className="meta">for {submitterName}</div>}
 
-      {loading && form && <div>Loading…</div>}
+      {loading && form && <div>Loading...</div>}
 
       {submitSummaryError && <div className="error summary">{submitSummaryError}</div>}
       <form onSubmit={(e) => { e.preventDefault(); handleSubmit() }}>
@@ -138,7 +139,7 @@ export default function SurveyPage() {
 
         <div className="actions">
           <button type="submit" className="submit-btn" disabled={loading}>
-            {loading ? 'Submitting…' : 'Submit'}
+            {loading ? 'Submitting...' : 'Submit'}
           </button>
         </div>
       </form>
