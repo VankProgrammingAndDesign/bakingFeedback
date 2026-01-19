@@ -15,7 +15,7 @@ export default function QuestionRenderer({ question, value, onChange, error }: P
     return (
       <div className="question-card">
         <div className="question-header">
-          <div className="prompt">{label}{question.required ? <span className="required-star"> *</span> : ''}</div>
+          <div className="prompt">{label}</div>
           {help && <div className="help-text">{help}</div>}
         </div>
         <textarea
@@ -39,7 +39,7 @@ export default function QuestionRenderer({ question, value, onChange, error }: P
   return (
     <div className="question-card">
       <div className="question-header">
-        <div className="prompt">{label}{question.required ? ' *' : ''}</div>
+        <div className="prompt">{label}</div>
         {help && <div className="help-text">{help}</div>}
       </div>
       <div className="scale-grid" role="radiogroup" aria-label={label}>

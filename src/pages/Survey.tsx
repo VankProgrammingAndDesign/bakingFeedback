@@ -119,7 +119,8 @@ export default function SurveyPage() {
   return (
     <div className="page form-container">
       <h2 className="form-title">{form?.title ?? 'Bakery Feedback'}</h2>
-      {submitterName && <div className="meta">for {submitterName}</div>}
+      {submitterName && <div className="meta">From {submitterName}</div>}
+      {bakeSessionID && <div className="meta">Bake Session ID: {bakeSessionID}</div>}
 
       {loading && form && <div>Loading...</div>}
 
